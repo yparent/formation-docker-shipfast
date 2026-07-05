@@ -1,0 +1,14 @@
+{
+  "name": "shipfast",
+  "version": "1.0.0",
+  "description": "ShipFast — raccourcisseur d'URL, fil rouge de la formation Docker",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.22.2",
+    "pg": "^8.11.5",
+    "redis": "^4.6.13"
+  }
+}

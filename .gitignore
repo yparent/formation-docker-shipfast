@@ -1,0 +1,17 @@
+# Node
+node_modules/
+npm-debug.log*
+# Environnement / secrets
+.env
+*.env
+secrets/
+# Logs & divers
+*.log
+.DS_Store
+# Build
+dist/
+# Python (Grand Prix)
+__pycache__/
+*.pyc
+.venv/
+venv/
