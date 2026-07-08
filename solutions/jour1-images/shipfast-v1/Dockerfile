@@ -1,0 +1,8 @@
+# Mission 5 — premier Dockerfile applicatif (version naive, ~1,1 Go)
+FROM node:24
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 3000
+CMD ["node", "server.js"]

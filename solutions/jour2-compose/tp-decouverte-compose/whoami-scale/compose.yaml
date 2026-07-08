@@ -1,0 +1,7 @@
+# TP decouverte Compose — demo de scaling (plage de ports)
+services:
+  web:
+    image: traefik/whoami
+    ports:
+      - "8080-8082:80"
+# docker compose up -d --scale web=3

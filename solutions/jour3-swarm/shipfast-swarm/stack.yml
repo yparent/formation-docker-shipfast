@@ -1,0 +1,69 @@
+# Jour 3 — ShipFast en production sur Swarm (secrets, overlay, rolling update)
+# Prealable : construire et pousser l'image, puis creer le secret :
+#   docker build -t VOTRE_ID/shipfast:v2 ./shipfast && docker push VOTRE_ID/shipfast:v2
+#   echo "formation" | docker secret create pg_password -
+# Deploiement : docker stack deploy --with-registry-auth -c stack.yml shipfast
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: shipfast
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_password
+    secrets: [pg_password]
+    volumes:
+      - dbdata:/var/lib/postgresql
+    networks: [back]
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+
+  cache:
+    image: redis:8-alpine
+    networks: [back]
+
+  api:
+    image: VOTRE_ID/shipfast:v2
+    environment:
+      DATABASE_URL: postgres://postgres@db:5432/shipfast
+      DATABASE_PASSWORD_FILE: /run/secrets/pg_password
+      REDIS_URL: redis://cache:6379
+      PUBLIC_BASE_URL: http://localhost:8080
+    secrets: [pg_password]
+    networks: [front, back]
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
+
+  proxy:
+    image: nginx:1.30-alpine
+    ports:
+      - "8080:80"
+    configs:
+      - source: nginx_conf
+        target: /etc/nginx/conf.d/default.conf
+    networks: [front]
+    deploy:
+      replicas: 2
+
+secrets:
+  pg_password:
+    external: true
+
+configs:
+  nginx_conf:
+    file: ./default.conf
+
+networks:
+  front:
+    driver: overlay
+  back:
+    driver: overlay
+    internal: true
+
+volumes:
+  dbdata:

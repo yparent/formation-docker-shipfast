@@ -1,0 +1,24 @@
+# Grand Prix — meteo-du-port sur Swarm (image poussee sur un registre)
+# docker build -t VOTRE_ID/meteo-du-port:1.0 . && docker push VOTRE_ID/meteo-du-port:1.0
+# docker stack deploy --with-registry-auth -c stack.yml meteo
+services:
+  app:
+    image: VOTRE_ID/meteo-du-port:1.0
+    ports:
+      - "8090:8090"
+    environment:
+      REDIS_URL: redis://cache:6379
+    networks: [meteonet]
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 1
+        order: start-first
+
+  cache:
+    image: redis:8-alpine
+    networks: [meteonet]
+
+networks:
+  meteonet:
+    driver: overlay

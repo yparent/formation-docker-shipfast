@@ -1,0 +1,25 @@
+# TP decouverte Compose — Adminer + PostgreSQL (avec healthcheck)
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_PASSWORD: formation
+      POSTGRES_DB: demo
+    volumes:
+      - dbdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d demo"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  adminer:
+    image: adminer:4
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  dbdata:

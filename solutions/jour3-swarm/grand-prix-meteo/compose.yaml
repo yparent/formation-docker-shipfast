@@ -1,0 +1,17 @@
+# Grand Prix — meteo-du-port en local (Compose) : build + Redis
+services:
+  app:
+    build: .
+    ports:
+      - "8090:8090"
+    environment:
+      REDIS_URL: redis://cache:6379
+    depends_on: [cache]
+    networks: [meteonet]
+
+  cache:
+    image: redis:8-alpine
+    networks: [meteonet]
+
+networks:
+  meteonet:

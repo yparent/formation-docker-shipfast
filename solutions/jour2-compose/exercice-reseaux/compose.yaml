@@ -1,0 +1,27 @@
+# Exercice reseaux — front / backend / db + stockage partage
+services:
+  front:
+    image: ubuntu
+    command: sleep infinity
+    networks: [frontnet]
+    volumes:
+      - share:/mnt/share
+
+  backend:
+    image: ubuntu
+    command: sleep infinity
+    networks: [frontnet, dbnet]
+    volumes:
+      - share:/mnt/share
+
+  db:
+    image: ubuntu
+    command: sleep infinity
+    networks: [dbnet]
+
+networks:
+  frontnet:
+  dbnet:
+
+volumes:
+  share:

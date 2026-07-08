@@ -1,0 +1,29 @@
+# TP Swarm — WordPress + MariaDB
+# Deploiement : docker stack deploy -c stack.yml wordpress
+services:
+  db:
+    image: mariadb:11
+    env_file: [db.env]
+    volumes:
+      - db_data:/var/lib/mysql
+    networks: [wpnet]
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+
+  wordpress:
+    image: wordpress:6
+    env_file: [wordpress.env]
+    ports:
+      - "8080:80"
+    networks: [wpnet]
+    deploy:
+      replicas: 2
+
+networks:
+  wpnet:
+    driver: overlay
+
+volumes:
+  db_data:
